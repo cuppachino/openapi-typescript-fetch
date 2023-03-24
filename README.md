@@ -1,5 +1,9 @@
 # 📘️ @cuppachino/openapi-fetch
 
+## Changes from upstream
+
+*   ✅ Fixed ESM/CJS support for browsers and node.
+
 [![version(scoped)](https://img.shields.io/npm/v/@cuppachino/openapi-fetch.svg)](https://www.npmjs.com/package/@cuppachino/openapi-fetch)
 
 A typed fetch client for [openapi-typescript](https://github.com/drwpow/openapi-typescript)
