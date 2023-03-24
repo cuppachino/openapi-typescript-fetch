@@ -1,5 +1,12 @@
 # @cuppachino/openapi-fetch
 
+## 2.0.6
+
+### Patch Changes
+
+- a892a68: fix: set default entry point to cjs output. Only affects targets that ignore the exports field in package.json.
+- 68657ec: retry ci action
+
 ## 2.0.5
 
 ### Patch Changes
