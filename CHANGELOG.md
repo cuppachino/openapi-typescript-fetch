@@ -1,5 +1,11 @@
 # @cuppachino/openapi-fetch
 
+## 2.0.3
+
+### Patch Changes
+
+- e6cac56: Update package.json
+
 ## 2.0.2
 
 ### Patch Changes
