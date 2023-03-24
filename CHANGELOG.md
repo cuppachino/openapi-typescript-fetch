@@ -1,5 +1,11 @@
 # @cuppachino/openapi-fetch
 
+## 2.0.5
+
+### Patch Changes
+
+- 0194f01: fix: coerce undefined body to null (stricter dev types)
+
 ## 2.0.4
 
 ### Patch Changes
