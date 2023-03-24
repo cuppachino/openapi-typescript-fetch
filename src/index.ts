@@ -328,12 +328,23 @@ function wrapMiddlewares(middlewares: Middleware[], fetch: Fetch): Fetch {
   return (url, init) => handler(0, url, init)
 }
 
+const preferNull = <T>(
+  maybe: T | undefined | null,
+): Exclude<T, undefined> | null => {
+  if (maybe === undefined) return null
+  return maybe as Exclude<T, undefined>
+}
+
 async function fetchUrl<R>(request: Request) {
-  const { url, init } = getFetchParams(request)
+  const {
+    init: { body, ...init },
+    url,
+  } = getFetchParams(request)
 
-  const response = await request.fetch(url, init)
-
-  return response as ApiResponse<R>
+  return (await request.fetch(url, {
+    ...init,
+    body: preferNull(body),
+  })) as ApiResponse<R>
 }
 
 function createFetch<OP>(fetch: _TypedFetch<OP>): TypedFetch<OP> {
