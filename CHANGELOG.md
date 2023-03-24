@@ -1,5 +1,11 @@
 # @cuppachino/openapi-fetch
 
+## 2.0.4
+
+### Patch Changes
+
+- c8b204a: Use exact optional query parameters
+
 ## 2.0.3
 
 ### Patch Changes
