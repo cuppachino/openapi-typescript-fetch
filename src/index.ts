@@ -91,9 +91,16 @@ export type Fetch = (
 export type _TypedFetch<OP> = (
   arg: OpArgType<OP>,
   init?: RequestInit,
-) => Promise<ApiResponse<OpReturnType<OP>>>
+  ) => Promise<ApiResponse<OpReturnType<OP>>>
+  
+export type _TypedFetchOptional<OP> = 
+  OpArgType<OP> extends Record<PropertyKey, never> ?
+  (
+    arg?: OpArgType<OP>,
+    init?: RequestInit
+  ) => Promise<ApiResponse<OpReturnType<OP>>> : _TypedFetch<OP>
 
-export type TypedFetch<OP> = _TypedFetch<OP> & {
+export type TypedFetch<OP> = _TypedFetchOptional<OP> & {
   Error: new (error: ApiError) => ApiError & {
     getActualType: () => OpErrorType<OP>
   }
@@ -347,7 +354,7 @@ async function fetchUrl<R>(request: Request) {
   })) as ApiResponse<R>
 }
 
-function createFetch<OP>(fetch: _TypedFetch<OP>): TypedFetch<OP> {
+function createFetch<OP>(fetch: _TypedFetchOptional<OP>): TypedFetch<OP> {
   const fun = async (payload: OpArgType<OP>, init?: RequestInit) => {
     try {
       return await fetch(payload, init)
@@ -398,7 +405,7 @@ function fetcher<Paths>() {
               path: path as string,
               method: method as Method,
               queryParams: Object.keys(queryParams || {}),
-              payload,
+              payload: payload || {},
               init: mergeRequestInit(defaultInit, init),
               fetch,
             }),
