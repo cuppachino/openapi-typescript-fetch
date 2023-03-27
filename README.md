@@ -3,6 +3,7 @@
 ## Changes from upstream
 
 *   ✅ Fixed ESM/CJS support for browsers and node.
+*   ✅ Zero-parameter requests do not require an empty object argument.
 
 [![version(scoped)](https://img.shields.io/npm/v/@cuppachino/openapi-fetch.svg)](https://www.npmjs.com/package/@cuppachino/openapi-fetch)
 
