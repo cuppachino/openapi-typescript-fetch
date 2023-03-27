@@ -91,14 +91,17 @@ export type Fetch = (
 export type _TypedFetch<OP> = (
   arg: OpArgType<OP>,
   init?: RequestInit,
-  ) => Promise<ApiResponse<OpReturnType<OP>>>
-  
-export type _TypedFetchOptional<OP> = 
-  OpArgType<OP> extends Record<PropertyKey, never> ?
-  (
-    arg?: OpArgType<OP>,
-    init?: RequestInit
-  ) => Promise<ApiResponse<OpReturnType<OP>>> : _TypedFetch<OP>
+) => Promise<ApiResponse<OpReturnType<OP>>>
+
+export type _TypedFetchOptional<OP> = OpArgType<OP> extends Record<
+  PropertyKey,
+  never
+>
+  ? (
+      arg?: OpArgType<OP>,
+      init?: RequestInit,
+    ) => Promise<ApiResponse<OpReturnType<OP>>>
+  : _TypedFetch<OP>
 
 export type TypedFetch<OP> = _TypedFetchOptional<OP> & {
   Error: new (error: ApiError) => ApiError & {

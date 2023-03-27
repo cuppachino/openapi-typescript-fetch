@@ -1,5 +1,15 @@
 # @cuppachino/openapi-fetch
 
+## 2.1.0
+
+### Minor Changes
+
+- 7aec33f: created fetches that previously required a `Record<string, never>` (empty object) as its first argument now allow that argument to be undefined.
+
+### Patch Changes
+
+- ce0f69a: make `Record<string, never>` payloads optional
+
 ## 2.0.6
 
 ### Patch Changes
