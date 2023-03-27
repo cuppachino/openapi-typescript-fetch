@@ -1,5 +1,11 @@
 # @cuppachino/openapi-fetch
 
+## 2.1.1
+
+### Patch Changes
+
+- b1b5b74: pass type errors
+
 ## 2.1.0
 
 ### Minor Changes
