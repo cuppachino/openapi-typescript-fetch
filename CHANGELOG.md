@@ -1,5 +1,11 @@
 # @cuppachino/openapi-fetch
 
+## 2.1.2
+
+### Patch Changes
+
+- 2dfe398: fix type export path
+
 ## 2.1.1
 
 ### Patch Changes
