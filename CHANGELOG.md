@@ -1,5 +1,11 @@
 # @cuppachino/openapi-fetch
 
+## 2.2.0
+
+### Minor Changes
+
+- 456668e: fix issue 22 - allow sending FormData as body
+
 ## 2.1.2
 
 ### Patch Changes
