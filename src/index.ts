@@ -23,12 +23,18 @@ export type OpArgType<OP> = OP extends {
   }
   // openapi 3
   requestBody?: {
-    content: {
-      'application/json': infer RB
-    }
+    content:
+      | {
+          'application/json': infer RB
+        }
+      | {
+          'multipart/form-data': infer FD
+        }
   }
 }
-  ? P & Q & (B extends Record<string, unknown> ? B[keyof B] : unknown) & RB
+  ? FD extends Record<string, string>
+    ? FormData
+    : P & Q & (B extends Record<string, unknown> ? B[keyof B] : unknown) & RB
   : Record<string, never>
 
 type OpResponseTypes<OP> = OP extends {
@@ -65,11 +71,11 @@ export type OpDefaultReturnType<OP> = _OpDefaultReturnType<OpResponseTypes<OP>>
 const never: unique symbol = Symbol()
 
 type _OpErrorType<T> = {
-  [S in Exclude<keyof T, 200 | 201>]: {
+  [S in Exclude<keyof T, 200 | 201 | 204>]: {
     status: S extends 'default' ? typeof never : S
     data: T[S]
   }
-}[Exclude<keyof T, 200 | 201>]
+}[Exclude<keyof T, 200 | 201 | 204>]
 
 type Coalesce<T, D> = [T] extends [never] ? D : T
 
@@ -236,10 +242,14 @@ function getQuery(
   return queryString(queryObj)
 }
 
-function getHeaders(body?: string, init?: HeadersInit) {
+function getHeaders(body?: CustomRequestInit['body'], init?: HeadersInit) {
   const headers = new Headers(init)
 
-  if (body !== undefined && !headers.has('Content-Type')) {
+  if (
+    body !== undefined &&
+    !(body instanceof FormData) &&
+    !headers.has('Content-Type')
+  ) {
     headers.append('Content-Type', 'application/json')
   }
 
@@ -250,8 +260,13 @@ function getHeaders(body?: string, init?: HeadersInit) {
   return headers
 }
 
-function getBody(method: Method, payload: any) {
-  const body = sendBody(method) ? JSON.stringify(payload) : undefined
+function getBody(method: Method, payload: unknown): CustomRequestInit['body'] {
+  if (!sendBody(method)) {
+    return
+  }
+
+  const body = payload instanceof FormData ? payload : JSON.stringify(payload)
+
   // if delete don't send body if empty
   return method === 'delete' && body === '{}' ? undefined : body
 }
@@ -272,7 +287,10 @@ function mergeRequestInit(
   return { ...first, ...second, headers }
 }
 
-function getFetchParams(request: Request) {
+function getFetchParams(request: Request): {
+  url: string
+  init: CustomRequestInit
+} {
   // clone payload
   // if body is a top level array [ 'a', 'b', param: value ] with param values
   // using spread [ ...payload ] returns [ 'a', 'b' ] and skips custom keys
@@ -288,7 +306,8 @@ function getFetchParams(request: Request) {
   const headers = getHeaders(body, request.init?.headers)
   const url = request.baseUrl + path + query
 
-  const init = {
+  // @ts-expect-error `body` is the correct type, but because we're using exact optional types, `body` is not allowed to be explicitly `undefined`. It's inferred as `undefined` because of the union return type of `getBody`, and there's no way to tell TS that it's optional here.
+  const init: CustomRequestInit = {
     ...request.init,
     method: request.method.toUpperCase(),
     headers,
@@ -429,7 +448,7 @@ function fetcher<Paths>() {
               init: mergeRequestInit(defaultInit, init),
               fetch,
             }),
-          )) as CreateFetch<M, Paths[P][M]>,
+          )) as unknown as CreateFetch<M, Paths[P][M]>,
       }),
     }),
   }
